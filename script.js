@@ -38,7 +38,7 @@ const errorBoxesAffect = (message) => {
 
 const getWord = async () => {
 	try {
-		const promise = await fetch('https://words.dev-apis.com/word-of-the-day');
+		const promise = await fetch('https://words.dev-apis.com/word-of-the-day?random=1');
 		const processedResponse = await promise.json();
 		correctWord = processedResponse.word;
 		console.log(`correct word ${correctWord}`);

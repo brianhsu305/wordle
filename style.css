@@ -33,6 +33,7 @@
 	justify-content: center;
 	font-size: 36px;
 	text-transform: uppercase;
+	color: white;
 }
 
 .green {
@@ -40,11 +41,11 @@
 }
 
 .yellow {
-	background-color: yellow;
+	background-color: rgb(175, 175, 65);
 }
 
 .grey {
-	background-color: grey;
+	background-color: rgb(92, 91, 91);
 }
 
 #gameMessage {
@@ -79,5 +80,15 @@
 	40%,
 	60% {
 		border: 4px solid red;
+	}
+}
+
+
+@media (prefers-color-scheme: light) {
+	.seperator {
+		background-color: black;
+	}
+	.guess-box {
+		border: 2px solid black;
 	}
 }
