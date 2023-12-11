@@ -1,8 +1,14 @@
 let guessAttempt = 1;
 let guessWords = Array(6).fill('');
 let correctWord = '';
+let letterCount = {};
 const gameMessage = document.getElementById('gameMessage');
 
+const deconstructWord = (word) => {
+	for (let i = 0; i < word.length; i++) {
+		letterCount[word[i]] ? letterCount[word[i]]++ : letterCount[word[i]] = 1;
+	}
+};
 const wordsComparison = (attemptWord, correctWord) => {
 	console.log(attemptWord, correctWord, guessAttempt);
 	if (attemptWord === correctWord) {
@@ -10,14 +16,21 @@ const wordsComparison = (attemptWord, correctWord) => {
 		gameMessage.innerHTML = 'Congratulations, you got the word!';
 		removeEventListener('keydown', handleKeyDown);
 	}
-	let guessBoxes = document.querySelector('.guesses').children.item(guessAttempt - 1);
+	let guessBoxes = document.querySelector('.guesses').children.item(guessAttempt - 1).children;
 	for (let i = 0; i < 5; i++) {
 		if (attemptWord[i] === correctWord[i]) {
-			guessBoxes.children.item(i).classList.add('green');
-		} else if (attemptWord[i] !== correctWord[i] && correctWord.includes(attemptWord[i])) {
-			guessBoxes.children.item(i).classList.add('yellow');
+			guessBoxes.item(i).classList.add('green');
+			letterCount[attemptWord[i]]--;
+		}
+	}
+	for (let i = 0; i < 5; i++) {
+		if (attemptWord[i] === correctWord[i]) {
+		}
+		else if (letterCount[attemptWord[i]] && letterCount[attemptWord[i]] !==0) {
+			guessBoxes.item(i).classList.add('yellow');
+			letterCount[attemptWord[i]]--;
 		} else {
-			guessBoxes.children.item(i).classList.add('grey');
+			guessBoxes.item(i).classList.add('grey');
 		}
 	}
 	guessAttempt++;
@@ -42,6 +55,9 @@ const getWord = async () => {
 		const processedResponse = await promise.json();
 		correctWord = processedResponse.word;
 		console.log(`correct word ${correctWord}`);
+		deconstructWord(correctWord);
+		console.log(letterCount);
+
 	} catch (error) {
 		console.log(error);
 	}
@@ -103,8 +119,7 @@ function handleKeyDown(e) {
 	}
 
 	update();
-};
-
+}
 
 getWord();
 addEventListener('keydown', handleKeyDown);
