@@ -6,32 +6,48 @@ const gameMessage = document.getElementById('gameMessage');
 
 const deconstructWord = (word) => {
 	for (let i = 0; i < word.length; i++) {
-		letterCount[word[i]] ? letterCount[word[i]]++ : letterCount[word[i]] = 1;
+		letterCount[word[i]] ? letterCount[word[i]]++ : (letterCount[word[i]] = 1);
 	}
 };
-const wordsComparison = (attemptWord, correctWord) => {
-	console.log(attemptWord, correctWord, guessAttempt);
+
+const wordsComparison = (attemptWord) => {
+	let correctWordArr = Array.from(correctWord);
 	if (attemptWord === correctWord) {
 		gameMessage.style.opacity = '1';
 		gameMessage.innerHTML = 'Congratulations, you got the word!';
 		removeEventListener('keydown', handleKeyDown);
 	}
 	let guessBoxes = document.querySelector('.guesses').children.item(guessAttempt - 1).children;
+	// for (let i = 0; i < 5; i++) {
+	// 	if (attemptWord[i] === correctWord[i]) {
+	// 		guessBoxes.item(i).classList.add('green');
+	// 	}
+	// }
+	// for (let i = 0; i < 5; i++) {
+	// 	if (attemptWord[i] === correctWord[i]) {
+	// 	}
+	// 	else if (letterCount[attemptWord[i]] && letterCount[attemptWord[i]] !==0) {
+	// 		guessBoxes.item(i).classList.add('yellow');
+	// 	} else {
+	// 		guessBoxes.item(i).classList.add('grey');
+	// 	}
+	// }
+
 	for (let i = 0; i < 5; i++) {
-		if (attemptWord[i] === correctWord[i]) {
-			guessBoxes.item(i).classList.add('green');
-			letterCount[attemptWord[i]]--;
-		}
-	}
-	for (let i = 0; i < 5; i++) {
-		if (attemptWord[i] === correctWord[i]) {
-		}
-		else if (letterCount[attemptWord[i]] && letterCount[attemptWord[i]] !==0) {
-			guessBoxes.item(i).classList.add('yellow');
-			letterCount[attemptWord[i]]--;
-		} else {
+		let letterPosition = correctWordArr.indexOf(attemptWord[i]);
+		if (letterPosition === -1) {
 			guessBoxes.item(i).classList.add('grey');
+		} else {
+			// letter is in the string
+			if (correctWordArr[i] === attemptWord[i]) {
+				guessBoxes.item(i).classList.add('green');
+			} else {
+				guessBoxes.item(i).classList.add('yellow');
+			}
+			correctWordArr[letterPosition] = '#';
+
 		}
+		console.log(correctWordArr);
 	}
 	guessAttempt++;
 };
@@ -42,6 +58,7 @@ const errorBoxesAffect = (message) => {
 	setTimeout(() => {
 		guessBoxes.classList.remove('error');
 	}, 500);
+
 	gameMessage.innerHTML = message;
 	gameMessage.classList.add('errorMessage');
 	setTimeout(() => {
@@ -54,10 +71,9 @@ const getWord = async () => {
 		const promise = await fetch('https://words.dev-apis.com/word-of-the-day?random=1');
 		const processedResponse = await promise.json();
 		correctWord = processedResponse.word;
-		console.log(`correct word ${correctWord}`);
+		console.log(`Correct word: ${correctWord}`);
 		deconstructWord(correctWord);
-		console.log(letterCount);
-
+		// console.log(letterCount);
 	} catch (error) {
 		console.log(error);
 	}
@@ -76,7 +92,7 @@ const sendWord = async () => {
 		});
 		const data = await response.json();
 		if (data.validWord) {
-			wordsComparison(data.word, correctWord);
+			wordsComparison(data.word);
 		} else {
 			errorBoxesAffect('Not a valid word');
 		}
